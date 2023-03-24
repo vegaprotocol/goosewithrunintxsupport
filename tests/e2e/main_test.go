@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
+	"github.com/pressly/goose/v3/internal"
 	"log"
 	"os"
 	"os/signal"
@@ -92,7 +93,7 @@ func TestMain(m *testing.M) {
 }
 
 // newDockerDB starts a database container and returns a usable SQL connection.
-func newDockerDB(t *testing.T) (*sql.DB, error) {
+func newDockerDB(t *testing.T) (internal.GooseDB, error) {
 	options := []testdb.OptionsFunc{
 		testdb.WithBindPort(*bindPort),
 		testdb.WithDebug(*debug),

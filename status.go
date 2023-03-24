@@ -3,12 +3,13 @@ package goose
 import (
 	"database/sql"
 	"fmt"
+	"github.com/pressly/goose/v3/internal"
 	"path/filepath"
 	"time"
 )
 
 // Status prints the status of all migrations.
-func Status(db *sql.DB, dir string, opts ...OptionsFunc) error {
+func Status(db internal.GooseDB, dir string, opts ...OptionsFunc) error {
 	option := &options{}
 	for _, f := range opts {
 		f(option)
@@ -42,7 +43,7 @@ func Status(db *sql.DB, dir string, opts ...OptionsFunc) error {
 	return nil
 }
 
-func printMigrationStatus(db *sql.DB, version int64, script string) error {
+func printMigrationStatus(db internal.GooseDB, version int64, script string) error {
 	q := GetDialect().migrationSQL()
 
 	var row MigrationRecord
