@@ -3,7 +3,6 @@ package goose
 import (
 	"errors"
 	"fmt"
-	"github.com/pressly/goose/v3/internal"
 	"sort"
 	"strings"
 )
@@ -29,7 +28,7 @@ func withApplyUpByOne() OptionsFunc {
 }
 
 // UpTo migrates up to a specific version.
-func UpTo(db internal.GooseDB, dir string, version int64, opts ...OptionsFunc) error {
+func UpTo(db GooseDB, dir string, version int64, opts ...OptionsFunc) error {
 	option := &options{}
 	for _, f := range opts {
 		f(option)
@@ -118,7 +117,7 @@ func UpTo(db internal.GooseDB, dir string, version int64, opts ...OptionsFunc) e
 
 // upToNoVersioning applies up migrations up to, and including, the
 // target version.
-func upToNoVersioning(db internal.GooseDB, migrations Migrations, version int64) error {
+func upToNoVersioning(db GooseDB, migrations Migrations, version int64) error {
 	var finalVersion int64
 	for _, current := range migrations {
 		if current.Version > version {
@@ -135,7 +134,7 @@ func upToNoVersioning(db internal.GooseDB, migrations Migrations, version int64)
 }
 
 func upWithMissing(
-	db internal.GooseDB,
+	db GooseDB,
 	missingMigrations Migrations,
 	foundMigrations Migrations,
 	dbMigrations Migrations,
@@ -206,19 +205,19 @@ func upWithMissing(
 }
 
 // Up applies all available migrations.
-func Up(db internal.GooseDB, dir string, opts ...OptionsFunc) error {
+func Up(db GooseDB, dir string, opts ...OptionsFunc) error {
 	return UpTo(db, dir, maxVersion, opts...)
 }
 
 // UpByOne migrates up by a single version.
-func UpByOne(db internal.GooseDB, dir string, opts ...OptionsFunc) error {
+func UpByOne(db GooseDB, dir string, opts ...OptionsFunc) error {
 	opts = append(opts, withApplyUpByOne())
 	return UpTo(db, dir, maxVersion, opts...)
 }
 
 // listAllDBVersions returns a list of all migrations, ordered ascending.
 // TODO(mf): fairly cheap, but a nice-to-have is pagination support.
-func listAllDBVersions(db internal.GooseDB) (Migrations, error) {
+func listAllDBVersions(db GooseDB) (Migrations, error) {
 	rows, err := GetDialect().dbVersionQuery(db)
 	if err != nil {
 		return nil, createVersionTable(db)

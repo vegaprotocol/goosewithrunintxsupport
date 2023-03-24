@@ -3,6 +3,7 @@ package testdb
 import (
 	"database/sql"
 	"fmt"
+	"github.com/pressly/goose/v3"
 	"log"
 	"strconv"
 
@@ -20,7 +21,7 @@ const (
 	POSTGRES_PASSWORD = "password1"
 )
 
-func newPostgres(opts ...OptionsFunc) (*sql.DB, func(), error) {
+func newPostgres(opts ...OptionsFunc) (goose.GooseDB, func(), error) {
 	option := &options{}
 	for _, f := range opts {
 		f(option)

@@ -2,7 +2,6 @@ package goose
 
 import (
 	"fmt"
-	"github.com/pressly/goose/v3/internal"
 )
 
 // SQLDialect abstracts the details of specific SQL dialects
@@ -12,7 +11,7 @@ type SQLDialect interface {
 	insertVersionSQL() string      // sql string to insert the initial version table row
 	deleteVersionSQL() string      // sql string to delete version
 	migrationSQL() string          // sql string to retrieve migrations
-	dbVersionQuery(db internal.GooseDB) (internal.GooseRows, error)
+	dbVersionQuery(db GooseDB) (GooseRows, error)
 }
 
 var dialect SQLDialect = &PostgresDialect{}
@@ -67,7 +66,7 @@ func (pg PostgresDialect) insertVersionSQL() string {
 	return fmt.Sprintf("INSERT INTO %s (version_id, is_applied) VALUES ($1, $2);", TableName())
 }
 
-func (pg PostgresDialect) dbVersionQuery(db internal.GooseDB) (internal.GooseRows, error) {
+func (pg PostgresDialect) dbVersionQuery(db GooseDB) (GooseRows, error) {
 	rows, err := db.Query(fmt.Sprintf("SELECT version_id, is_applied from %s ORDER BY id DESC", TableName()))
 	if err != nil {
 		return nil, err
@@ -105,7 +104,7 @@ func (m MySQLDialect) insertVersionSQL() string {
 	return fmt.Sprintf("INSERT INTO %s (version_id, is_applied) VALUES (?, ?);", TableName())
 }
 
-func (m MySQLDialect) dbVersionQuery(db internal.GooseDB) (internal.GooseRows, error) {
+func (m MySQLDialect) dbVersionQuery(db GooseDB) (GooseRows, error) {
 	rows, err := db.Query(fmt.Sprintf("SELECT version_id, is_applied from %s ORDER BY id DESC", TableName()))
 	if err != nil {
 		return nil, err
@@ -142,7 +141,7 @@ func (m SqlServerDialect) insertVersionSQL() string {
 	return fmt.Sprintf("INSERT INTO %s (version_id, is_applied) VALUES (@p1, @p2);", TableName())
 }
 
-func (m SqlServerDialect) dbVersionQuery(db internal.GooseDB) (internal.GooseRows, error) {
+func (m SqlServerDialect) dbVersionQuery(db GooseDB) (GooseRows, error) {
 	rows, err := db.Query(fmt.Sprintf("SELECT version_id, is_applied FROM %s ORDER BY id DESC", TableName()))
 	if err != nil {
 		return nil, err
@@ -192,7 +191,7 @@ func (m Sqlite3Dialect) insertVersionSQL() string {
 	return fmt.Sprintf("INSERT INTO %s (version_id, is_applied) VALUES (?, ?);", TableName())
 }
 
-func (m Sqlite3Dialect) dbVersionQuery(db internal.GooseDB) (internal.GooseRows, error) {
+func (m Sqlite3Dialect) dbVersionQuery(db GooseDB) (GooseRows, error) {
 	rows, err := db.Query(fmt.Sprintf("SELECT version_id, is_applied from %s ORDER BY id DESC", TableName()))
 	if err != nil {
 		return nil, err
@@ -230,7 +229,7 @@ func (rs RedshiftDialect) insertVersionSQL() string {
 	return fmt.Sprintf("INSERT INTO %s (version_id, is_applied) VALUES ($1, $2);", TableName())
 }
 
-func (rs RedshiftDialect) dbVersionQuery(db internal.GooseDB) (internal.GooseRows, error) {
+func (rs RedshiftDialect) dbVersionQuery(db GooseDB) (GooseRows, error) {
 	rows, err := db.Query(fmt.Sprintf("SELECT version_id, is_applied from %s ORDER BY id DESC", TableName()))
 	if err != nil {
 		return nil, err
@@ -268,7 +267,7 @@ func (m TiDBDialect) insertVersionSQL() string {
 	return fmt.Sprintf("INSERT INTO %s (version_id, is_applied) VALUES (?, ?);", TableName())
 }
 
-func (m TiDBDialect) dbVersionQuery(db internal.GooseDB) (internal.GooseRows, error) {
+func (m TiDBDialect) dbVersionQuery(db GooseDB) (GooseRows, error) {
 	rows, err := db.Query(fmt.Sprintf("SELECT version_id, is_applied from %s ORDER BY id DESC", TableName()))
 	if err != nil {
 		return nil, err
@@ -301,7 +300,7 @@ func (m ClickHouseDialect) createVersionTableSQL() string {
     ) Engine = MergeTree(date, (date), 8192)`, TableName())
 }
 
-func (m ClickHouseDialect) dbVersionQuery(db internal.GooseDB) (internal.GooseRows, error) {
+func (m ClickHouseDialect) dbVersionQuery(db GooseDB) (GooseRows, error) {
 	rows, err := db.Query(fmt.Sprintf("SELECT version_id, is_applied FROM %s ORDER BY version_id DESC", TableName()))
 	if err != nil {
 		return nil, err

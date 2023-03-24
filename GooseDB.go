@@ -1,4 +1,4 @@
-package internal
+package goose
 
 import (
 	"database/sql"

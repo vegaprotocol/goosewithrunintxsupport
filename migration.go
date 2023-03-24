@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/pressly/goose/v3/internal"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -35,7 +34,7 @@ func (m *Migration) String() string {
 }
 
 // Up runs an up migration.
-func (m *Migration) Up(db internal.GooseDB) error {
+func (m *Migration) Up(db GooseDB) error {
 	if err := m.run(db, true); err != nil {
 		return err
 	}
@@ -43,14 +42,14 @@ func (m *Migration) Up(db internal.GooseDB) error {
 }
 
 // Down runs a down migration.
-func (m *Migration) Down(db internal.GooseDB) error {
+func (m *Migration) Down(db GooseDB) error {
 	if err := m.run(db, false); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (m *Migration) run(db internal.GooseDB, direction bool) error {
+func (m *Migration) run(db GooseDB, direction bool) error {
 	switch filepath.Ext(m.Source) {
 	case ".sql":
 		f, err := baseFS.Open(m.Source)
