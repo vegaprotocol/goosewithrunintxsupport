@@ -1,4 +1,4 @@
-module github.com/pressly/goose/v3
+module github.com/vegaprotocol/goosewithrunintxsupport/v3
 
 go 1.18
 
