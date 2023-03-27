@@ -1,7 +1,6 @@
 package e2e
 
 import (
-	"database/sql"
 	"flag"
 	"fmt"
 	"log"
@@ -96,21 +95,21 @@ func TestMain(m *testing.M) {
 }
 
 // newDockerDB starts a database container and returns a usable SQL connection.
-func newDockerDB(t *testing.T) (*sql.DB, error) {
+func newDockerDB(t *testing.T, transactionsSupported bool) (goose.Connection, error) {
 	options := []testdb.OptionsFunc{
 		testdb.WithBindPort(*bindPort),
 		testdb.WithDebug(*debug),
 	}
 	var (
-		db      *sql.DB
+		db      goose.Connection
 		cleanup func()
 		err     error
 	)
 	switch *dialect {
 	case dialectPostgres:
 		db, cleanup, err = testdb.NewPostgres(options...)
-	case dialectMySQL:
-		db, cleanup, err = testdb.NewMariaDB(options...)
+		//	case dialectMySQL:
+		//		db, cleanup, err = testdb.NewMariaDB(options...)
 	default:
 		return nil, fmt.Errorf("unsupported dialect: %q", *dialect)
 	}

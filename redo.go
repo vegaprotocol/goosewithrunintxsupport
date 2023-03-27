@@ -1,11 +1,7 @@
 package goose
 
-import (
-	"database/sql"
-)
-
 // Redo rolls back the most recently applied migration, then runs it again.
-func Redo(db *sql.DB, dir string, opts ...OptionsFunc) error {
+func Redo(db Connection, dir string, opts ...OptionsFunc) error {
 	option := &options{}
 	for _, f := range opts {
 		f(option)

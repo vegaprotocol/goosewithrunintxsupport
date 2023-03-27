@@ -1,7 +1,6 @@
 package goose
 
 import (
-	"database/sql"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -24,7 +23,7 @@ func SetSequential(s bool) {
 }
 
 // Create writes a new blank migration file.
-func CreateWithTemplate(db *sql.DB, dir string, tmpl *template.Template, name, migrationType string) error {
+func CreateWithTemplate(db Connection, dir string, tmpl *template.Template, name, migrationType string) error {
 	var version string
 	if sequential {
 		// always use DirFS here because it's modifying operation
@@ -81,7 +80,7 @@ func CreateWithTemplate(db *sql.DB, dir string, tmpl *template.Template, name, m
 }
 
 // Create writes a new blank migration file.
-func Create(db *sql.DB, dir, name, migrationType string) error {
+func Create(db Connection, dir, name, migrationType string) error {
 	return CreateWithTemplate(db, dir, nil, name, migrationType)
 }
 

@@ -15,7 +15,7 @@ import (
 //
 // All statements following an Up or Down directive are grouped together
 // until another direction directive is found.
-func runSQLMigration(db *sql.DB, statements []string, useTx bool, v int64, direction bool, noVersioning bool) error {
+func runSQLMigration(db Connection, statements []string, useTx bool, v int64, direction bool, noVersioning bool) error {
 	if useTx {
 		// TRANSACTION.
 
@@ -82,6 +82,7 @@ func runSQLMigration(db *sql.DB, statements []string, useTx bool, v int64, direc
 }
 
 func execQuery(fn func(string, ...interface{}) (sql.Result, error), query string, args ...interface{}) error {
+
 	if !verbose {
 		_, err := fn(query, args...)
 		return err

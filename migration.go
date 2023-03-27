@@ -1,7 +1,7 @@
 package goose
 
 import (
-	"database/sql"
+	"context"
 	"errors"
 	"fmt"
 	"path/filepath"
@@ -37,7 +37,7 @@ func (m *Migration) String() string {
 }
 
 // Up runs an up migration.
-func (m *Migration) Up(db *sql.DB) error {
+func (m *Migration) Up(db Connection) error {
 	if err := m.run(db, true); err != nil {
 		return err
 	}
@@ -45,14 +45,14 @@ func (m *Migration) Up(db *sql.DB) error {
 }
 
 // Down runs a down migration.
-func (m *Migration) Down(db *sql.DB) error {
+func (m *Migration) Down(db Connection) error {
 	if err := m.run(db, false); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (m *Migration) run(db *sql.DB, direction bool) error {
+func (m *Migration) run(db Connection, direction bool) error {
 	switch filepath.Ext(m.Source) {
 	case ".sql":
 		f, err := baseFS.Open(m.Source)
@@ -128,7 +128,7 @@ func (m *Migration) run(db *sql.DB, direction bool) error {
 }
 
 func runGoMigrationNoTx(
-	db *sql.DB,
+	db Connection,
 	fn GoMigrationNoTx,
 	version int64,
 	direction bool,
@@ -147,7 +147,7 @@ func runGoMigrationNoTx(
 }
 
 func runGoMigration(
-	db *sql.DB,
+	db Connection,
 	fn GoMigration,
 	version int64,
 	direction bool,
@@ -179,7 +179,7 @@ func runGoMigration(
 	return nil
 }
 
-func insertOrDeleteVersion(tx *sql.Tx, version int64, direction bool) error {
+func insertOrDeleteVersion(tx Tx, version int64, direction bool) error {
 	if direction {
 		_, err := tx.Exec(GetDialect().insertVersionSQL(), version, direction)
 		return err
@@ -188,12 +188,12 @@ func insertOrDeleteVersion(tx *sql.Tx, version int64, direction bool) error {
 	return err
 }
 
-func insertOrDeleteVersionNoTx(db *sql.DB, version int64, direction bool) error {
+func insertOrDeleteVersionNoTx(db Connection, version int64, direction bool) error {
 	if direction {
-		_, err := db.Exec(GetDialect().insertVersionSQL(), version, direction)
+		_, err := db.ExecContext(context.Background(), GetDialect().insertVersionSQL(), version, direction)
 		return err
 	}
-	_, err := db.Exec(GetDialect().deleteVersionSQL(), version)
+	_, err := db.ExecContext(context.Background(), GetDialect().deleteVersionSQL(), version)
 	return err
 }
 
